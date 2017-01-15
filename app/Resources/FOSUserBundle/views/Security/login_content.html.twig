@@ -1,0 +1,108 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+{#{% if error %}#}
+    {#<div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>#}
+{#{% endif %}#}
+
+{#<form action="{{ path("fos_user_security_check") }}" method="post">#}
+    {#{% if csrf_token %}#}
+        {#<input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />#}
+    {#{% endif %}#}
+
+    {#<label for="username">{{ 'security.login.username'|trans }}</label>#}
+    {#<input type="text" id="username" name="_username" value="{{ last_username }}" required="required" />#}
+
+    {#<label for="password">{{ 'security.login.password'|trans }}</label>#}
+    {#<input type="password" id="password" name="_password" required="required" />#}
+
+    {#<input type="checkbox" id="remember_me" name="_remember_me" value="on" />#}
+    {#<label for="remember_me">{{ 'security.login.remember_me'|trans }}</label>#}
+
+    {#<input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />#}
+{#</form>#}
+
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-lg-offset-3 col-lg-6 col-md-offset-2 col-md-8 col-sm-offset-1 col-sm-10">
+            <div class="eternity-form">
+                <div class="login-form-section">
+                    <div class="login-content animated bounceIn">
+                        <form action="{{ path("fos_user_security_check") }}" method="post">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+                            <div class="section-title">
+                                <h3>LogIn to your Account</h3>
+                            </div>
+                            <div class="textbox-wrap">
+                                <div class="input-group">
+                                    <span class="input-group-addon "><i class="icon-user icon-color"></i></span>
+                                    <input class="form-control" type="text" id="username" name="_username"
+                                           value="{{ last_username }}" required="required"
+                                           placeholder="{{ 'security.login.username'|trans }}"/>
+                                </div>
+                            </div>
+                            <div class="textbox-wrap">
+                                <div class="input-group">
+                                    <span class="input-group-addon "><i class="icon-key icon-color"></i></span>
+                                    <input class="form-control " type="password" id="password"
+                                           name="_password" required="required"
+                                           placeholder="{{ 'security.login.password'|trans }}" />
+                                </div>
+                            </div>
+                            {% if error %}
+                                {#login-form-links#}
+                                <div class="textbox-wrap text-center animated shake">
+                                    {#<h4 class="blue">Don't have an Account?</h4>#}
+                                    {#<span>#}
+                                    <div class="text-danger">
+                                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                                    </div>
+                                    {#</span>#}
+                                </div>
+                            {% endif %}
+                            <div class="login-form-action clearfix">
+                                <div class="checkbox pull-left">
+                                    <div class="custom-checkbox">
+                                        <input type="checkbox" id="remember_me" name="_remember_me" value="on" checked />
+
+                                        {#<input type="checkbox"  name="iCheck">#}
+                                    </div>
+                                    <span class="checkbox-text pull-left">&nbsp;{{ 'security.login.remember_me'|trans }}</span>
+                                </div>
+                                <button type="submit" class="btn btn-success pull-right green-btn">LogIn &nbsp; <i class="icon-chevron-right"></i></button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-offset-3 col-lg-3 col-md-offset-2 col-md-4 col-sm-offset-1 col-sm-5">
+            <div class="eternity-form">
+                <div class="login-form-section">
+                    <div class="login-form-links link1 animated fadeInLeftBig">
+                        <h4 class="blue">Don't have an Account?</h4>
+                        <span>No worry</span>
+                        <a href="{{ path('fos_user_registration_register') }}" class="blue">Click Here</a>
+                        <span>to Register</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-5">
+            <div class="eternity-form">
+                <div class="login-form-section">
+                    <div class="login-form-links link2 animated fadeInRightBig">
+                        <h4 class="green">Forget your Password?</h4>
+                        <span>Dont worry</span>
+                        <a href="{{ path('fos_user_resetting_request') }}" class="green">Click Here</a>
+                        <span>to Get New One</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- row -->
+</div>
