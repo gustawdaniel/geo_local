@@ -1,8 +1,41 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-{{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
-    {{ form_widget(form) }}
-    <div>
-        <input type="submit" value="{{ 'registration.submit'|trans }}" />
+<div class="container eternity-form">
+    <div class="registration-form-section">
+            {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
+
+            <div class="section-title reg-header animated fadeInDown">
+                <h3>Get your Account Here </h3>
+
+            </div>
+            <div class="clearfix">
+                <div class="col-sm-6 registration-left-section  animated fadeInRightBig">
+                    <div class="reg-content">
+                        <div class="textbox-wrap">
+                            <div class="input-group">
+                                <span class="input-group-addon "><i class="fa fa-user" aria-hidden="true"></i></span>
+                                {{ form_widget(form.email, {'attr': {'placeholder': 'Email'}}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 registration-right-section animated fadeInLeftBig">
+                    <div class="reg-content">
+                        <div class="textbox-wrap">
+                            <div class="input-group">
+                                <span class="input-group-addon "><i class="fa fa-key" aria-hidden="true"></i></span>
+                                {{ form_widget(form.plainPassword, {'attr': {'placeholder': 'Password'}}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="registration-form-action clearfix animated fadeInUp">
+                <a href="{{ path('fos_user_security_login') }}" class="btn btn-success pull-left blue-btn ">
+                    <i class="fa fa-chevron-left"></i>&nbsp; &nbsp;Back To Login
+                </a>
+                <button type="submit" class="btn btn-success pull-right green-btn ">Register Now &nbsp; <i class="fa fa-chevron-right"></i></button>
+            </div>
+        {{ form_end(form) }}
     </div>
-{{ form_end(form) }}
+</div>

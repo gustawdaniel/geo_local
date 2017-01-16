@@ -1,8 +1,25 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-{{ form_start(form, { 'action': path('fos_user_profile_edit'), 'attr': { 'class': 'fos_user_profile_edit' } }) }}
-    {{ form_widget(form) }}
-    <div>
-        <input type="submit" value="{{ 'profile.edit.submit'|trans }}" />
+<div class="container eternity-form">
+
+    {{ form_start(form, { 'action': path('fos_user_profile_edit'), 'attr': { 'class': 'fos_user_profile_edit' } }) }}
+
+    <div class="section-title reg-header">
+        <h3>Edit Profile</h3>
+        <div>
+            {{ form_widget(form) }}
+        </div>
     </div>
-{{ form_end(form) }}
+
+    <div class="registration-form-action clearfix">
+        <div>
+            <a href="{{ path('fos_user_profile_show') }}" class="btn btn-success pull-left blue-btn ">
+                <i class="fa fa-chevron-left"></i>&nbsp; &nbsp;Back To Profile
+            </a>
+            <button type="submit" class="btn btn-success pull-right green-btn ">{{ 'profile.edit.submit'|trans }} &nbsp; <i class="fa fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    {{ form_end(form) }}
+
+</div>

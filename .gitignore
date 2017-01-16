@@ -15,4 +15,4 @@
 /vendor/
 /web/bundles/
 /.idea
-/web/components
+/web/bower_components

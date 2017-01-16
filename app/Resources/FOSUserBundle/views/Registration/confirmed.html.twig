@@ -3,8 +3,18 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block fos_user_content %}
-    <p>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</p>
-    {% if targetUrl %}
-    <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
-    {% endif %}
+    <div class="container eternity-form">
+        <div class="section-title reg-header">
+            <h3>Registration finished correctly</h3>
+            <div>
+                <p>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</p>
+                {% if targetUrl %}
+                    <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
+                {% endif %}
+            </div>
+            <a href="{{ path('homepage') }}" class="btn btn-info width-min-300px">Let's start</a>
+        </div>
+    </div>
+
+
 {% endblock fos_user_content %}

@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="container eternity-form">
+        <div class="section-title reg-header">
+            <h3>Update your address</h3>
+
+            <br>
+
+            {% for place in places %}
+                <div id="place_{{ place.googleId }}" class="btn-group" role="group" style="padding-bottom: 5px; width: 100%;">
+                    <button type="button" style="width: 74%;" class="btn btn-default">{{ place.formattedAddress }}</button>
+                    <button type="button" style="width: 26%;" onclick='deleteLocation("{{ place.googleId }}")' class="btn btn-danger">Usuń</button>
+                </div>
+            {% endfor %}
+
+            <div class="input-group">
+                <input name="formatted_address" type="text" class="form-control" placeholder="Type your location...">
+                <span class="input-group-btn" style="padding-bottom: 30px;">
+                    <button id="my_location" class="btn btn-info" onclick="getLocation()">Check my location</button>
+                    <button id="save_location" class="btn btn-default" onclick="saveLocation()">Save location</button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        var x = document.getElementById("demo");
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            $.ajax({
+                url: "{{ path('ajax_geo_location') }}",
+                method: "POST",
+                data: {
+                    lat : position.coords.latitude,
+                    lon: position.coords.longitude
+                },
+                success: function(msg){
+                    $("#my_location").html('Position obtained');
+                    console.log(msg);
+                    $("input[name=formatted_address]").val(msg['formatted_address']);
+                }});
+        }
+
+        function saveLocation(){
+            $.post('{{ path('ajax_geo_save') }}',
+                    JSON.stringify({formatted_address: $("input[name=formatted_address]").val()})
+            ).done(function(msg){console.log(msg)});
+
+            location.reload();
+
+        }
+
+        function deleteLocation(googleId){
+            $.ajax({
+                url: "{{ path('ajax_geo_delete') }}",
+                method: "POST",
+                data: {
+                    google_id: googleId
+                },
+                beforeSend: function() {
+                    console.log('before: ' + googleId);
+                },
+                success: function(msg){
+                    console.log(msg);
+                }
+            });
+            location.reload();
+        }
+    </script>
+
+{% endblock %}

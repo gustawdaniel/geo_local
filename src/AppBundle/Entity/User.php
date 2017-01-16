@@ -10,6 +10,8 @@ namespace AppBundle\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\Place;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -24,10 +26,40 @@ class User extends BaseUser
      */
     protected $id;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Place", mappedBy="users", cascade={"persist"})
+     */
+    private $places;
+
+    /**
+     * @return mixed
+     */
+    public function getPlaces()
+    {
+        return $this->places->toArray();
+    }
+
+
+    public function removePlace(Place $place)
+    {
+        $this->places->remove($place);
+    }
+
+    /**
+     * @param mixed $place
+     */
+    public function addPlace(Place $place)
+    {
+        if (!$this->places->contains($place))
+        {
+            $this->places->add($place);
+        }
+    }
+
     public function __construct()
     {
         parent::__construct();
-        // your own logic
+        $this->places = new ArrayCollection();
     }
 
     public function setEmail($email)

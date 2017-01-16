@@ -3,7 +3,13 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block fos_user_content %}
-<p>
-{{ 'resetting.check_email'|trans({'%tokenLifetime%': tokenLifetime})|nl2br }}
-</p>
+    <div class="container eternity-form">
+        <div class="section-title reg-header">
+            <h3>Check Email</h3>
+            <div class="fos_user_user_show">
+                <p>{{ 'resetting.check_email'|trans({'%tokenLifetime%': tokenLifetime})|nl2br }}
+                </p>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -1,11 +1,25 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-<form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
-    <div>
-        <label for="username">{{ 'resetting.request.username'|trans }}</label>
-        <input type="text" id="username" name="username" required="required" />
+<div class="container eternity-form">
+    <div class="forgot-password-section animated bounceInLeft">
+        <div class="section-title">
+            <h3>Forget Password</h3>
+        </div>
+        <div class="forgot-content">
+            <form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
+                <div class="textbox-wrap">
+                    <div class="input-group">
+                        <span class="input-group-addon "><i class="fa fa-envelope"></i></span>
+                        {#<input type="email" class="form-control " placeholder="Email Id" required="required" />#}
+                        <input type="email" class="form-control" id="username" name="username" required="required" placeholder="Email Id"/>
+
+                    </div>
+                </div>
+                <div class="forget-form-action clearfix">
+                    <a href="{{ path('fos_user_security_login') }}" class="btn btn-success pull-left blue-btn"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;Back  </a>
+                    <button type="submit" class="btn btn-success pull-right green-btn">Submit &nbsp;&nbsp; <i class="fa fa-chevron-right"></i></button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div>
-        <input type="submit" value="{{ 'resetting.request.submit'|trans }}" />
-    </div>
-</form>
+</div>
