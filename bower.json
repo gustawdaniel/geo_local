@@ -16,8 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap3": "bootstrap#^3.3.7",
-    "bootstrap4": "bootstrap#v4.0.0-alpha.6",
+    "bootstrap": "bootstrap#^3.3.7",
     "animate.css": "^3.5.2",
     "components-font-awesome": "^4.7.0",
     "iCheck": "^1.0.2",
