@@ -1,0 +1,16 @@
+.place-name {
+    width: 74%;
+}
+
+.place-delete {
+    width: 26%;
+}
+
+.place-padding-bottom{
+    padding-bottom: 30px;
+}
+
+.place-elem {
+    padding-bottom: 5px;
+    width: 100%;
+}

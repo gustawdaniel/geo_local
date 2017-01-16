@@ -24,8 +24,6 @@ class Place
      */
     protected $id;
 
-
-
     /**
      * @ORM\Column(name="google_id", type="string", nullable=true)
      */
@@ -292,5 +290,11 @@ class Place
     public function setCountry($country)
     {
         $this->country = $country;
+    }
+
+    public function __toString()
+    {
+        return json_encode(["id"=>$this->getGoogleId(),"address"=>$this->getFormattedAddress()],JSON_UNESCAPED_UNICODE);
+//        return $this->getFormattedAddress();
     }
 }

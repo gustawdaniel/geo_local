@@ -11,6 +11,7 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\Place;
@@ -103,13 +104,14 @@ Class PlacesController extends Controller
     }
 
     /**
-     * @Route("/profile/ajax_geo_delete", name="ajax_geo_delete")
-     * @param Request $request
+     * @Route("/profile/ajax_geo_delete/{googleId}", name="ajax_geo_delete")
+     * @Method("DELETE")
+     * @param googleId
      * @return JsonResponse
      */
-    public function ajaxGeoDelete(Request $request)
+    public function ajaxGeoDelete($googleId)
     {
-        $googleId = $request->get('google_id');
+//        $googleId = $request->get('google_id');
 
         $place = $this->getDoctrine()->getRepository("AppBundle:Place")->findOneBy(array(
             'googleId' => $googleId
