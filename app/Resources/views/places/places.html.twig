@@ -44,8 +44,6 @@
     places.push({{ place|raw }});
     {% endfor %}
 
-    console.log(places);
-
     var info = document.getElementById("info");
     var area = document.getElementsByClassName("section-title")[0];
     var list = document.getElementsByClassName("list")[0];
@@ -71,7 +69,7 @@
     function showPosition(position) {
         $.ajax({
             url: "{{ path('ajax_geo_location') }}",
-            method: "POST",
+            method: "GET",
             data: {
                 lat: position.coords.latitude,
                 lon: position.coords.longitude
@@ -87,11 +85,9 @@
                 JSON.stringify({formatted_address: $("input[name=formatted_address]").val()})
         ).done(function(res){
 
-//                    console.log(places.filter(function(obj) {return obj.id == res.place_id}));
-
-                    if(places.filter(function(obj) {return obj.id == res.place_id}).length){
-                        return;
-                    }
+        if(places.filter(function(obj) {return obj.id == res.place_id}).length){
+            return;
+        }
 
         places.push({'id':res.place_id,'addess':res.formatted_address});
         list.innerHTML += '<div data-id="'+res.place_id+'" class="btn-group place-elem" role="group">\

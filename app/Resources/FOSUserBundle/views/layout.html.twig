@@ -2,37 +2,13 @@
 
 {% block title %}{% endblock %}
 
-{% block meta %}
-    {{ parent() }}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-{% endblock %}
-
 {% block body %}
-
     {{ parent() }}
-
-        {#{% if app.request.hasPreviousSession %}#}
-            {#{% for type, messages in app.session.flashbag.all() %}#}
-                {#{% for message in messages %}#}
-                    {#<div class="flash-{{ type }}">#}
-                        {#{{ message }}#}
-                    {#</div>#}
-                {#{% endfor %}#}
-            {#{% endfor %}#}
-        {#{% endif %}#}
-
-        {#<div>#}
-            {% block fos_user_content %}{% endblock fos_user_content %}
-        {#</div>#}
-
-
-
+    {% block fos_user_content %}{% endblock fos_user_content %}
 {%  endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-
 
     <!-- Animations CSS -->
     <link rel="stylesheet" href="{{ asset('bower_components/animate.css/animate.min.css') }}">
@@ -57,38 +33,9 @@
 
 {% block javascripts %}
     {{ parent() }}
-
-
-
     <!-- Custom Checkbox PLugin -->
     <script src="{{ asset('bower_components/iCheck/icheck.min.js') }}"></script>
 
     <!-- For Initializing Checkbox And Focus Event For Textbox -->
-    <script type="text/javascript">
-        $(function () {
-
-            //Custom Checkbox For Light Theme
-            $("input").iCheck({
-                checkboxClass: 'icheckbox_square-blue',
-                increaseArea: '20%'
-            });
-
-
-            //Custom Checkbox For Dark Theme
-            $(".dark input").iCheck({
-                checkboxClass: 'icheckbox_polaris',
-                increaseArea: '20%'
-            });
-
-
-            //TextBox Focus Event
-            $(".form-control").focus(function () {
-                $(this).closest(".textbox-wrap").addClass("focused");
-            }).blur(function () {
-                $(this).closest(".textbox-wrap").removeClass("focused");
-            });
-
-        });
-    </script>
-
+    <script src="{{ asset('bundles/app/js/iCheck-config.js') }}"></script>
 {% endblock %}

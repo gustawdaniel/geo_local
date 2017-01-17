@@ -6,8 +6,9 @@
         <div class="fos_user_user_show">
             <p>{{ 'profile.show.username'|trans }}: {{ user.username }}</p>
             <p>{{ 'profile.show.email'|trans }}: {{ user.email }}</p>
-            <a href="{{ path('places') }}" class="btn btn-primary">Edit Places</a>
+            <a href="{{ path('homepage') }}" class="btn btn-primary">Edit Places</a>
             <a href="{{ path('fos_user_profile_edit') }}" class="btn btn-info">Edit Profile</a>
+            <a href="{{ path('fos_user_change_password') }}" class="btn btn-success">Change Password</a>
         </div>
     </div>
 </div>

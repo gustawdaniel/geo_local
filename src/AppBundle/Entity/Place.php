@@ -13,7 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="place")
+ * @ORM\Table(name="places")
  */
 class Place
 {
@@ -38,7 +38,6 @@ class Place
     /** @ORM\Column(name="formatted_address", type="string", nullable=true)  */
     protected $formattedAddress;
 
-    // we should calculate precision
     /** @ORM\Column(name="lon", type="float", precision=9, nullable=true)  */
     protected $lon;
 
@@ -48,7 +47,7 @@ class Place
     /** @ORM\Column(name="add_at",type="datetime") */
     protected $add_at;
 
-    /** @ORM\Column(name="street_number",type="integer", nullable=true) */
+    /** @ORM\Column(name="street_number",type="string", nullable=true) */
     protected $streetNumber;
 
     /** @ORM\Column(name="route",type="string", nullable=true) */
@@ -180,121 +179,29 @@ class Place
         $this->add_at = $add_at;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStreetNumber()
+    public function getParams()
     {
-        return $this->streetNumber;
+        return [
+            "country",
+            "administrative_area_level_1",
+            "administrative_area_level_2",
+            "locality",
+            "sublocality_level_1",
+            "route",
+            "street_number"
+        ];
     }
 
-    /**
-     * @param mixed $streetNumber
-     */
-    public function setStreetNumber($streetNumber)
+    public function setParam($name,$value)
     {
-        $this->streetNumber = $streetNumber;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRoute()
-    {
-        return $this->route;
-    }
-
-    /**
-     * @param mixed $route
-     */
-    public function setRoute($route)
-    {
-        $this->route = $route;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSublocalityLevel1()
-    {
-        return $this->sublocalityLevel1;
-    }
-
-    /**
-     * @param mixed $sublocalityLevel1
-     */
-    public function setSublocalityLevel1($sublocalityLevel1)
-    {
-        $this->sublocalityLevel1 = $sublocalityLevel1;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLocality()
-    {
-        return $this->locality;
-    }
-
-    /**
-     * @param mixed $locality
-     */
-    public function setLocality($locality)
-    {
-        $this->locality = $locality;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAdministrativeAreaLevel2()
-    {
-        return $this->administrativeAreaLevel2;
-    }
-
-    /**
-     * @param mixed $administrativeAreaLevel2
-     */
-    public function setAdministrativeAreaLevel2($administrativeAreaLevel2)
-    {
-        $this->administrativeAreaLevel2 = $administrativeAreaLevel2;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAdministrativeAreaLevel1()
-    {
-        return $this->administrativeAreaLevel1;
-    }
-
-    /**
-     * @param mixed $administrativeAreaLevel1
-     */
-    public function setAdministrativeAreaLevel1($administrativeAreaLevel1)
-    {
-        $this->administrativeAreaLevel1 = $administrativeAreaLevel1;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCountry()
-    {
-        return $this->country;
-    }
-
-    /**
-     * @param mixed $country
-     */
-    public function setCountry($country)
-    {
-        $this->country = $country;
+        if(in_array($name,$this->getParams())){
+            $name = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $name))));//camelcase
+            $this->$name  = $value;
+        }
     }
 
     public function __toString()
     {
         return json_encode(["id"=>$this->getGoogleId(),"address"=>$this->getFormattedAddress()],JSON_UNESCAPED_UNICODE);
-//        return $this->getFormattedAddress();
     }
 }

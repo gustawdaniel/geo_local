@@ -17,16 +17,15 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\Place;
 use AppBundle\Form\PlaceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
-//use AppBundle\Entity\User;
 
 Class PlacesController extends Controller
 {
     /**
      * @Route("/profile/places", name="places")
-     * @param Request $request
+     * @Method("GET")
      * @return Response
      */
-    public function editPlacesAction(Request $request)
+    public function editPlacesAction()
     {
         if(!$this->getUser()){
             return $this->redirectToRoute('fos_user_security_login');
@@ -36,13 +35,7 @@ Class PlacesController extends Controller
         $places = $this->getUser()->getPlaces();
         $form = $this->createForm(PlaceType::class, $place);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-        }
-
         return $this->render(':places:places.html.twig', array(
-            'data' => $this->getAddress(52.2844037, 20.969362699999998),
             'places' => $places,
             'form' => $form->createView(),
         ));
@@ -50,45 +43,33 @@ Class PlacesController extends Controller
 
     /**
      * @Route("/profile/ajax_geo_save", name="ajax_geo_save")
+     * @Route("/profile/ajax_geo_save/{debug}")
+     * @Method("POST")
      */
-    public function ajaxGeoSave(Request $request)
+    public function ajaxGeoSave(Request $request, $debug=null)
     {
-        $params = array();
         $content = $request->getContent();
+        $params = json_decode($content, true);
 
-        if (!empty($content))
-        {
-            $params = json_decode($content, true); // 2nd param to get as array
-        }
+        $formattedAddress = $params['formatted_address'];
+        $address = $this->getAddress($formattedAddress);
 
-        $formatted_address = $params['formatted_address'];
-
-//        return new JsonResponse($params);
-
-        $address = $this->addressToArray($formatted_address);
-
+        if($debug=="debug") { return new JsonResponse($address); }
 
         $place = $this->getPlace($address);
 
-        // these lines persist user relation with place, not only place, don't delete
+        // these lines persist user relation with place, not only place
         $em = $this->getDoctrine()->getManager();
         $em->persist($place);
         $em->flush();
-        $code = 200;
 
-//        $place = $this->getPlace($address);
-//
-//        // these lines persist user relation with place, not only place, don't delete
-//        $em = $this->getDoctrine()->getManager();
-//        $em->persist($place);
-//        $em->flush();
-
-        return new JsonResponse($address, $code);
+        return new JsonResponse($address, 201);
     }
 
     /**
      * @Route("/profile/ajax_geo_location", name="ajax_geo_location")
      * @param Request $request
+     * @Method("GET")
      * @return JsonResponse
      */
     public function ajaxGeoLocation(Request $request)
@@ -96,11 +77,9 @@ Class PlacesController extends Controller
         $lon = $request->get('lon');
         $lat = $request->get('lat');
 
-        $address = $this->getAddress($lat,$lon);
+        $address = $this->getAddress([$lat,$lon]);// get address from coordinates
 
-        $code =200;
-
-        return new JsonResponse($address,$code);
+        return new JsonResponse($address);
     }
 
     /**
@@ -111,101 +90,38 @@ Class PlacesController extends Controller
      */
     public function ajaxGeoDelete($googleId)
     {
-//        $googleId = $request->get('google_id');
-
         $place = $this->getDoctrine()->getRepository("AppBundle:Place")->findOneBy(array(
             'googleId' => $googleId
         ));
 
-        $address = $this->addressToArray($place->getFormattedAddress());
+        if(!$place) { return new JsonResponse(["error"=>"Place Not Found"],404); }
 
+        $address = $this->getAddress($place->getFormattedAddress());
 
-    //        $this->getUser()->removePlace($place);
         $place->removeUser($this->getUser());
         $em = $this->getDoctrine()->getManager();
         $em->persist($place);
         $em->flush();
 
-        $code =200;
-
-        return new JsonResponse($address,$code);
-    }
-
-    //public function showUserExternalDataAction(User $user)
-    //{
-    //    return $this->render('AppBundle:Profile:show_external_data.html.twig', array(
-    //        'data' => $this->getAddress(52.2844037, 20.969362699999998),
-    //    ));
-    //}
-
-    public function getCoordinates($formatted_address)
-    {
-        $formatted_address = str_replace(" ", "+", $formatted_address); // replace all the white space with "+" sign to match with google search pattern
-
-        $url = "http://maps.google.com/maps/api/geocode/json?sensor=false&address=$formatted_address";
-
-        $response = file_get_contents($url);
-
-        $json = json_decode($response, TRUE); //generate array object from the response from the web
-
-        return array(
-            $json['results'][0]['geometry']['location']['lat'],
-            $json['results'][0]['geometry']['location']['lng']
-        );
-    }
-
-    public function getAddress($lat, $long)
-    {
-        $url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&sensor=false";
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_ENCODING, "");
-        $curlData = curl_exec($curl);
-        curl_close($curl);
-
-        $response = json_decode($curlData,true);
-        return $response["results"][0];
+        return new JsonResponse($address,204);
     }
 
     /**
-     * @param array $components
-     * @return array $response
+     * @param $data
+     * @return array
+     * @throws \Exception
      */
-    public function addressComponentTransform($components)
+    public function getAddress($data)
     {
-        $response = [];
-        foreach($components as $component)
-        {
-            $response[$component["types"][0]]= $component["long_name"];
+        if(is_string($data)){
+            $address = str_replace(" ", "+", $data); // replace all the white space with "+" sign to match with google search pattern
+            $url = "http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address";
+        } elseif (is_array($data) && count($data)) {
+            $url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=$data[0],$data[1]&sensor=false";
+        } else {
+            throw new \Exception("Incorrect args, put string or array with lat and lon");
         }
-        return $response;
-    }
 
-    /**
-     * @param $address
-     * @return array
-     */
-    public function addressToArray($address)
-    {
-        $address = str_replace(" ", "+", $address); // replace all the white space with "+" sign to match with google search pattern
-        $url = "http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address";
-        $response = file_get_contents($url);
-        $json = json_decode($response, TRUE); //generate array object from the response from the web
-        return $json['results'][0];
-    }
-
-    /**
-     * @param $lon
-     * @param $lat
-     * @return array
-     */
-    public function coordinatesToArray($lon, $lat)
-    {
-        $url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lon&sensor=false";
         $response = file_get_contents($url);
         $json = json_decode($response, TRUE); //generate array object from the response from the web
         return $json['results'][0];
@@ -230,28 +146,15 @@ Class PlacesController extends Controller
             $place->setLon($address['geometry']['location']['lng']);
             $place->setFormattedAddress($address['formatted_address']);
 
-            $format_components = $this->addressComponentTransform($address["address_components"]);
+            $params = $place->getParams();
 
-            if(in_array('country',$format_components)) {
-                $place->setCountry($format_components["country"]);
-            }
-            if(in_array('administrative_area_level_1',$format_components)) {
-                $place->setAdministrativeAreaLevel1($format_components["administrative_area_level_1"]);
-            }
-            if(in_array('administrative_area_level_2',$format_components)) {
-                $place->setAdministrativeAreaLevel2($format_components["administrative_area_level_2"]);
-            }
-            if(in_array('locality',$format_components)) {
-                $place->setLocality($format_components["locality"]);
-            }
-            if(in_array('sublocality_level_1',$format_components)){
-                $place->setSublocalityLevel1($format_components["sublocality_level_1"]);
-            }
-            if(in_array('route',$format_components)) {
-                $place->setRoute($format_components["route"]);
-            }
-            if(in_array('street_number',$format_components)){
-                $place->setStreetNumber($format_components["street_number"]);
+            foreach($address["address_components"] as $component){
+                foreach($params as $paramId => $param){
+                    if(in_array($param,$component["types"])){
+                        $place->setParam($param,$component["long_name"]);
+                        unset($params[$paramId]);
+                    }
+                }
             }
         }
 
