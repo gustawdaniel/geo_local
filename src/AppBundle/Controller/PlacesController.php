@@ -52,7 +52,12 @@ Class PlacesController extends Controller
         $params = json_decode($content, true);
 
         $formattedAddress = $params['formatted_address'];
-        $address = $this->getAddress($formattedAddress);
+
+        try {
+            $address = $this->getAddress($formattedAddress);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 500);
+        }
 
         if($debug=="debug") { return new JsonResponse($address); }
 
@@ -78,7 +83,11 @@ Class PlacesController extends Controller
         $lon = $request->get('lon');
         $lat = $request->get('lat');
 
-        $address = $this->getAddress([$lat,$lon]);// get address from coordinates
+        try {
+            $address = $this->getAddress([$lat, $lon]);// get address from coordinates
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 500);
+        }
 
         return new JsonResponse($address);
     }
@@ -98,12 +107,16 @@ Class PlacesController extends Controller
 
         if(!$place) { return new JsonResponse(["error"=>"Place Not Found"],404); }
 
-        $address = $this->getAddress($place->getFormattedAddress());
+        try {
+            $address = $this->getAddress($place->getFormattedAddress());
 
-        $place->removeUser($this->getUser());
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($place);
-        $em->flush();
+            $place->removeUser($this->getUser());
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($place);
+            $em->flush();
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 500);
+        }
 
         return new JsonResponse($address,204);
     }
@@ -115,17 +128,25 @@ Class PlacesController extends Controller
      */
     public function getAddress($data)
     {
+        $GOOGLE_MAPS_API_KEY = $this->container->getParameter('google_maps_api_key');
+
         if(is_string($data)){
             $address = str_replace(" ", "+", $data); // replace all the white space with "+" sign to match with google search pattern
-            $url = "http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address";
+            $url = "https://maps.google.com/maps/api/geocode/json?key=$GOOGLE_MAPS_API_KEY&sensor=false&address=$address";
         } elseif (is_array($data) && count($data)) {
-            $url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=$data[0],$data[1]&sensor=false";
+            $url = "https://maps.googleapis.com/maps/api/geocode/json?key=$GOOGLE_MAPS_API_KEY&latlng=$data[0],$data[1]&sensor=false";
         } else {
             throw new \Exception("Incorrect args, put string or array with lat and lon");
         }
 
         $response = file_get_contents($url);
         $json = json_decode($response, TRUE); //generate array object from the response from the web
+
+        if(array_key_exists("error_message", $json)) {
+            throw new \Exception($json['error_message']);
+        }
+//        dump($json);die;
+
         return $json['results'][0];
     }
 

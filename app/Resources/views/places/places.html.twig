@@ -11,12 +11,12 @@
             <p id="info"></p>
 
             <div class="list">
-            {% for place in places %}
-                <div data-id="{{ place.googleId }}" class="btn-group place-elem" role="group">
-                    <button type="button" class="place-name btn btn-default">{{ place.formattedAddress }}</button>
-                    <button type="button" class="place-delete btn btn-danger delete">Delete</button>
-                </div>
-            {% endfor %}
+                {% for place in places %}
+                    <div data-id="{{ place.googleId }}" class="btn-group place-elem" role="group">
+                        <button type="button" class="place-name btn btn-default">{{ place.formattedAddress }}</button>
+                        <button type="button" class="place-delete btn btn-danger delete">Delete</button>
+                    </div>
+                {% endfor %}
             </div>
 
             <div class="input-group">
@@ -32,81 +32,88 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link href="{{ asset('bundles/app/css/place.css') }}" rel="stylesheet" />
+    <link href="{{ asset('bundles/app/css/place.css') }}" rel="stylesheet"/>
 {% endblock %}
 
 {% block javascripts %}
-{{ parent() }}
+    {{ parent() }}
 
-<script>
-    var places = [];
-    {% for place in places %}
-    places.push({{ place|raw }});
-    {% endfor %}
+    <script>
+        const places = [];
+        {% for place in places %}
+        places.push({{ place|raw }});
+        {% endfor %}
 
-    var info = document.getElementById("info");
-    var area = document.getElementsByClassName("section-title")[0];
-    var list = document.getElementsByClassName("list")[0];
+        const info = document.getElementById("info");
+        const area = document.getElementsByClassName("section-title")[0];
+        const list = document.getElementsByClassName("list")[0];
 
-    area.addEventListener('click',function(e){
-       if(e.target.id=='my_location'){
-           getLocation();
-       } else if(e.target.id=='save_location') {
-           saveLocation();
-       } else if(e.target.classList.contains('delete')){
-           deleteLocation(e.target.parentNode.dataset.id);
-       }
-    });
+        area.addEventListener('click', function (e) {
+            if (e.target.id === 'my_location') {
+                getLocation();
+            } else if (e.target.id === 'save_location') {
+                saveLocation();
+            } else if (e.target.classList.contains('delete')) {
+                deleteLocation(e.target.parentNode.dataset.id);
+            }
+        });
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-        } else {
-            info.innerHTML = "Geolocation is not supported by this browser.";
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                info.innerHTML = "Geolocation is not supported by this browser.";
+            }
         }
-    }
 
-    function showPosition(position) {
-        $.ajax({
-            url: "{{ path('ajax_geo_location') }}",
-            method: "GET",
-            data: {
-                lat: position.coords.latitude,
-                lon: position.coords.longitude
-            },
-            success: function(msg){
+        function showPosition(position) {
+            $.ajax({
+                url: "{{ path('ajax_geo_location') }}",
+                method: "GET",
+                data: {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                },
+            }).done(msg => {
                 $("#my_location").html('Position obtained');
                 $("input[name=formatted_address]").val(msg['formatted_address']);
-            }});
-    }
-
-    function saveLocation(){
-        $.post('{{ path('ajax_geo_save') }}',
-                JSON.stringify({formatted_address: $("input[name=formatted_address]").val()})
-        ).done(function(res){
-
-        if(places.filter(function(obj) {return obj.id == res.place_id}).length){
-            return;
+            }).fail((xhr, status, error) => {
+                console.log("CATCH_SHOW", xhr, status, error);
+                info.innerHTML = xhr.responseJSON.message;
+            });
         }
 
-        places.push({'id':res.place_id,'addess':res.formatted_address});
-        list.innerHTML += '<div data-id="'+res.place_id+'" class="btn-group place-elem" role="group">\
-            <button type="button" class="place-name btn btn-default">'+res.formatted_address+'</button>\
+        function saveLocation() {
+            $.post('{{ path('ajax_geo_save') }}',
+                JSON.stringify({formatted_address: $("input[name=formatted_address]").val()})
+            ).done(function (res) {
+
+                if (places.filter(function (obj) {
+                    return obj.id === res.place_id
+                }).length) {
+                    return;
+                }
+
+                places.push({'id': res.place_id, 'addess': res.formatted_address});
+                list.innerHTML += '<div data-id="' + res.place_id + '" class="btn-group place-elem" role="group">\
+            <button type="button" class="place-name btn btn-default">' + res.formatted_address + '</button>\
             <button type="button" class="place-delete btn btn-danger delete">Delete</button>\
             </div>';
-        });
-    }
+            }).fail((xhr, status, error) => {
+                console.log("CATCH", xhr, status, error)
+            });
+        }
 
-    function deleteLocation(googleId){
-        var route = "{{ path('ajax_geo_delete',{'googleId':'PLACEHOLDER'}) }}";
-        $.ajax({
-            url: route.replace("PLACEHOLDER",googleId),
-            method: "DELETE"
-        });
-        places = places.filter(function( obj ) {
-            return obj.id !== googleId;
-        });
-        list.querySelector("[data-id='"+googleId+"']").outerHTML='';
-    }
-</script>
+        function deleteLocation(googleId) {
+            var route = "{{ path('ajax_geo_delete',{'googleId':'PLACEHOLDER'}) }}";
+            $.ajax({
+                url: route.replace("PLACEHOLDER", googleId),
+                method: "DELETE"
+            });
+            places = places.filter(function (obj) {
+                return obj.id !== googleId;
+            });
+            list.querySelector("[data-id='" + googleId + "']").outerHTML = '';
+        }
+    </script>
 {% endblock %}

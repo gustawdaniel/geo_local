@@ -37,3 +37,13 @@ php bin/console server:run --docroot=web
 ```
 firefox localhost:8000
 ```
+
+Project has page in google console for my gustaw.daniel@gmail.com email address
+
+> https://console.developers.google.com/apis/credentials?project=symfony-fos-user-geo-tutorial
+
+And there is API_KEY for google maps associated with `Geocoding API`
+
+> https://console.developers.google.com/google/maps-apis/apis/geocoding-backend.googleapis.com/metrics?project=symfony-fos-user-geo-tutorial&duration=PT1H
+
+This key is saved in .env
