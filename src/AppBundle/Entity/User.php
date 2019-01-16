@@ -38,7 +38,6 @@ class User extends BaseUser
         return $this->places->toArray();
     }
 
-
     public function removePlace(Place $place)
     {
         $this->places->remove($place);
