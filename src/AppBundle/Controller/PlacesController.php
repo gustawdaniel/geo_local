@@ -71,6 +71,7 @@ Class PlacesController extends Controller
      * @param Request $request
      * @Method("GET")
      * @return JsonResponse
+     * @throws \Exception
      */
     public function ajaxGeoLocation(Request $request)
     {
@@ -87,6 +88,7 @@ Class PlacesController extends Controller
      * @Method("DELETE")
      * @param googleId
      * @return JsonResponse
+     * @throws \Exception
      */
     public function ajaxGeoDelete($googleId)
     {
