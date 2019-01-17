@@ -31,7 +31,7 @@ composer install
 php bin/console doctrine:database:create
 php bin/console doctrine:schema:update --force
 php bin/console assets:install --symlink
-php bin/console server:run --docroot=web
+php bin/console server:run
 ```
 
 ```

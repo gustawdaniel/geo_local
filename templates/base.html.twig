@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% block meta %}{% endblock %}
+
+    {% block stylesheets %}
+        <!-- Bootstrap 3 CSS -->
+        <link rel="stylesheet" href="{{ asset('bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
+
+        <!-- Eternity Login , Registration & Forgot Password Forms CSS -->
+        <link href="{{ asset('css/forms.css') }}" rel="stylesheet" />
+    {% endblock %}
+
+</head>
+<body>
+{% block body %}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="{% if app.request.attributes.get('_route') == 'homepage' %}active{% endif %}">
+                    <a class="navbar-brand" href="{{ url('homepage') }}">Places</a>
+                </div>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="navbar">
+                {#<ul class="nav navbar-nav">#}
+                {#<li class="{% if app.request.attributes.get('_route') == 'about' %}active{% endif %}"><a href="{{ url('about') }}">About Us</a></li>#}
+                {#<li class="{% if app.request.attributes.get('_route') == 'contact' %}active{% endif %}"><a href="{{ url('contact') }}">Contact</a></li>#}
+                {#</ul>#}
+                {#<ul class="nav navbar-nav">#}
+                {#</ul>#}
+                <ul class="nav navbar-nav navbar-right">
+                    {% if app.user %}
+                        <li class="{% if app.request.attributes.get('_route') == 'fos_user_profile_show' %}list-group-item-info{% endif %}">
+                            <a href="{{ url('fos_user_profile_show') }}" data-toggle="tooltip" data-placement="bottom"
+                               title="{{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }}">My Acconut</a>
+                        </li>
+                        <li>
+                            <a href="{{ url('fos_user_security_logout') }}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="{% if app.request.attributes.get('_route') == 'fos_user_security_login' %}active{% endif %}">
+                            <a href="{{ url('fos_user_security_login') }}">Login</a>
+                        </li>
+                        <li class="list-group-item-info {% if app.request.attributes.get('_route') == 'fos_user_registration_register' %}active{% endif %}">
+                            <a href="{{ url('fos_user_registration_register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('bower_components/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ asset('bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+{% endblock %}
+</body>
+</html>

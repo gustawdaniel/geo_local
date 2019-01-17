@@ -1,0 +1,13 @@
+fos_user:
+  from_email:
+    address:        noreply@example.com
+    sender_name:    Test Addess
+  db_driver: orm
+  firewall_name: main
+  user_class: App\Entity\User
+  registration:
+    form:
+      type: App\Form\RegistrationType
+  profile:
+    form:
+      type: App\Form\ProfileType
